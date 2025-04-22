@@ -48,25 +48,58 @@ public class AssertionErrorCreator {
 
   public AssertionError assertionError(String message, Object actual, Object expected, Representation representation) {
     // @format:off
-    return assertionFailedError(message, actual,expected)
+    return assertionFailedError(message, actual,expected, representation)
                     .orElse(comparisonFailure(message, actual, expected, representation)
                     .orElse(assertionError(message)));
     // @format:on
   }
 
-  private Optional<AssertionError> assertionFailedError(String message, Object actual, Object expected) {
-    try {
-      Object o = constructorInvoker.newInstance("org.opentest4j.AssertionFailedError",
-                                                MSG_ARG_TYPES_FOR_ASSERTION_FAILED_ERROR,
-                                                message,
-                                                expected,
-                                                actual);
+//  private Optional<AssertionError> assertionFailedError(String message, Object actual, Object expected) {
+//    try {
+//      Object o = constructorInvoker.newInstance("org.opentest4j.AssertionFailedError",
+//                                                MSG_ARG_TYPES_FOR_ASSERTION_FAILED_ERROR,
+//                                                message,
+//                                                expected,
+//                                                actual);
+//
+//      if (o instanceof AssertionError error) return Optional.of(error);
+//
+//    } catch (@SuppressWarnings("unused") Throwable ignored) {}
+//    return Optional.empty();
+//  }
+public Optional<AssertionError> assertionFailedError(String message, Object expected, Object actual, Representation representation) {
+  try {
+    // 문자열과 배열에 대한 올바른 표현 사용
+    Object expectedValue = expected;
+    Object actualValue = actual;
 
-      if (o instanceof AssertionError error) return Optional.of(error);
+    // 문자열에 대한 표현 처리
+    if (expected instanceof String && actual instanceof String) {
+      expectedValue = representation.toStringOf(expected);
+      actualValue = representation.toStringOf(actual);
+    }
+    // 배열에 대한 표현 처리
+    else if (actual != null && actual.getClass().isArray()) {
+      actualValue = representation.toStringOf(actual);
+      if (expected != null && expected.getClass().isArray()) {
+        expectedValue = representation.toStringOf(expected);
+      }
+    }
 
-    } catch (@SuppressWarnings("unused") Throwable ignored) {}
+    Object o = constructorInvoker.newInstance("org.opentest4j.AssertionFailedError",
+            MSG_ARG_TYPES_FOR_ASSERTION_FAILED_ERROR,
+            message,
+            expectedValue,
+            actualValue);
+    if (o instanceof AssertionError assertionError) {
+      Failures.instance().removeAssertJRelatedElementsFromStackTraceIfNeeded(assertionError);
+      return Optional.of(assertionError);
+    }
+    return Optional.empty();
+  } catch (Throwable e) {
     return Optional.empty();
   }
+}
 
   private Optional<AssertionError> comparisonFailure(String message,
                                                      Object actual,

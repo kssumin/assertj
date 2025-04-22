@@ -213,7 +213,7 @@ public class Objects {
 
   public void assertEqual(AssertionInfo info, Object actual, Object expected) {
     if (!areEqual(actual, expected))
-      throw failures.failure(info, shouldBeEqual(actual, expected, comparisonStrategy, info.representation()));
+      throw failures.failure(info, shouldBeEqual(actual, expected, comparisonStrategy, info.representation()), actual, expected);
   }
 
   public void assertNotEqual(AssertionInfo info, Object actual, Object other) {

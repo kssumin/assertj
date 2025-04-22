@@ -50,7 +50,7 @@ class Objects_assertEqual_Test extends ObjectsBaseTest {
     Throwable error = catchThrowable(() -> objects.assertEqual(info, "Luke", "Yoda"));
 
     assertThat(error).isInstanceOf(AssertionError.class);
-    verify(failures).failure(info, shouldBeEqual("Luke", "Yoda", info.representation()));
+    verify(failures).failure(info, shouldBeEqual("Luke", "Yoda", info.representation()), "Luke", "Yoda");
   }
 
   @Test
@@ -76,7 +76,7 @@ class Objects_assertEqual_Test extends ObjectsBaseTest {
     Throwable error = catchThrowable(() -> objectsWithCustomComparisonStrategy.assertEqual(info, "Luke", "Yoda"));
 
     assertThat(error).isInstanceOf(AssertionError.class);
-    verify(failures).failure(info, shouldBeEqual("Luke", "Yoda", customComparisonStrategy, STANDARD_REPRESENTATION));
+    verify(failures).failure(info, shouldBeEqual("Luke", "Yoda", customComparisonStrategy, STANDARD_REPRESENTATION), "Luke", "Yoda");
   }
 
   @Test

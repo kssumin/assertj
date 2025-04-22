@@ -24,7 +24,6 @@ import org.assertj.core.configuration.Configuration;
 import org.assertj.core.configuration.ConfigurationProvider;
 import org.assertj.core.description.Description;
 import org.assertj.core.error.AssertionErrorCreator;
-import org.assertj.core.error.AssertionErrorFactory;
 import org.assertj.core.error.ErrorMessageFactory;
 import org.assertj.core.error.MessageFormatter;
 import org.assertj.core.error.ShouldBeEqual;
@@ -82,26 +81,6 @@ public class Failures {
   }
 
   private Failures() {}
-
-  /**
-   * Creates a <code>{@link AssertionError}</code> following this pattern:
-   * <ol>
-   * <li>creates a <code>{@link AssertionError}</code> using <code>{@link AssertionInfo#overridingErrorMessage()}</code>
-   * as the error message if such value is not {@code null}, or</li>
-   * <li>uses the given <code>{@link AssertionErrorFactory}</code> to create an <code>{@link AssertionError}</code>,
-   * prepending the value of <code>{@link AssertionInfo#description()}</code> to the error message</li>
-   * </ol>
-   *
-   * @param info contains information about the failed assertion.
-   * @param factory knows how to create {@code AssertionError}s.
-   * @return the created <code>{@link AssertionError}</code>.
-   */
-  public AssertionError failure(AssertionInfo info, AssertionErrorFactory factory) {
-    AssertionError error = failureIfErrorMessageIsOverridden(info);
-    if (error != null) return error;
-    printThreadDumpIfNeeded();
-    return factory.newAssertionError(info.description(), info.representation());
-  }
 
   /**
    * Creates a <code>{@link AssertionError}</code> following this pattern:
